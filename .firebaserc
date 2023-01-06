@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "kanbanfire-9818c": {
+      "hosting": {
+        "kanban-fire": [
+          "kanbanfire-9818c"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "kanbanfire-9818c"
+  }
+}
