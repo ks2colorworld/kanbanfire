@@ -2,9 +2,12 @@ import { Component } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 
+import { AngularFirestore, AngularFirestoreCollection } from "@angular/fire/compat/firestore"; // 튜토리얼 기준 변경 >> import { AngularFirestoreModule } from '@angular/fire/firestore';
+
 import { Task } from './task/Task';
 import { TaskDialogResult } from './task-dialog/TaskDialogResult';
 import { TaskDialogComponent } from './task-dialog/task-dialog.component';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -13,25 +16,34 @@ import { TaskDialogComponent } from './task-dialog/task-dialog.component';
 })
 export class AppComponent {
 
-  constructor(
-    private dialog: MatDialog
-  ) { }
-
   title = 'kanban-fire';
 
-  todo: Task[] = [
-    {
-      title: 'Buy milk',
-      description: 'Go to the store and by milk'
-    },
-    {
-      title: 'Create a Kanban app',
-      description: 'Using Firebase and Angular create a Kanban app!'
-    }
-  ];
+  todo//!: Observable<Task[]>; // 
+    = this.store.collection('todo').valueChanges({ idField: 'id' }) as Observable<Task[]>;
+  inProgress//!: Observable<Task[]>; // 
+    = this.store.collection('inProgress').valueChanges({ idField: 'id' }) as Observable<Task[]>;
+  done//!: Observable<Task[]>; // 
+    = this.store.collection('done').valueChanges({ idField: 'id' }) as Observable<Task[]>;
 
-  inProgress: Task[] = [];
-  done: Task[] = [];
+  // private todoCollection!: AngularFirestoreCollection<Task>;
+  // private inProgressCollection!: AngularFirestoreCollection<Task>;
+  // private doneCollection!: AngularFirestoreCollection<Task>;
+
+  constructor(
+    private dialog: MatDialog,
+    private store: AngularFirestore,
+  ) { }
+
+  ngOnInit(): void {
+    // this.todoCollection = this.store.collection<Task>('todo');
+    // this.todo = this.todoCollection.valueChanges();
+
+    // this.inProgressCollection = this.store.collection<Task>('inProgress');
+    // this.inProgress = this.inProgressCollection.valueChanges();
+
+    // this.doneCollection = this.store.collection<Task>('done');
+    // this.done = this.doneCollection.valueChanges();
+  }
 
   editTask(list: 'done' | 'todo' | 'inProgress', task: Task): void {
     const dialogRef = this.dialog.open(TaskDialogComponent, {
@@ -45,23 +57,31 @@ export class AppComponent {
       if (!result) {
         return;
       }
-      const dataList = this[list];
-      const taskIndex = dataList.indexOf(task);
+      // firestore 기준 코드 교체
       if (result.delete) {
-        dataList.splice(taskIndex, 1);
+        this.store.collection(list).doc(task.id).delete();
       } else {
-        dataList[taskIndex] = task;
+        this.store.collection(list).doc(task.id).update(task);
       }
     });
   }
 
-  drop(event: CdkDragDrop<Task[]>): void {   // 튜토리얼 소스 (오류!) >> CdkDragDrop<Task[]|null> / https://developers.google.com/codelabs/building-a-web-app-with-angular-and-firebase#4
+  drop(event: CdkDragDrop<Task[] | null>): void {
     if (event.previousContainer === event.container) {
       return;
     }
-    if (!event.container.data || !event.previousContainer.data) {
+    if (!event.previousContainer.data || !event.container.data) {
       return;
     }
+    // firestore 기준 코드 추가
+    const item = event.previousContainer.data[event.previousIndex];
+    this.store.firestore.runTransaction(() => {
+      const promise = Promise.all([
+        this.store.collection(event.previousContainer.id).doc(item.id).delete(),
+        this.store.collection(event.container.id).add(item),
+      ]);
+      return promise;
+    });
 
     transferArrayItem(
       event.previousContainer.data,
@@ -84,7 +104,8 @@ export class AppComponent {
         if (!result) {
           return;
         }
-        this.todo.push(result.task);
+        // firestore 기준 코드 교체
+        this.store.collection('todo').add(result.task);
       });
   }
 }
