@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 
-import { AngularFirestore, AngularFirestoreCollection } from "@angular/fire/compat/firestore"; // 튜토리얼 기준 변경 >> import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFirestore } from "@angular/fire/compat/firestore";
 
 import { Task } from './task/Task';
 import { TaskDialogResult } from './task-dialog/TaskDialogResult';
@@ -18,16 +18,9 @@ export class AppComponent {
 
   title = 'kanban-fire';
 
-  todo//!: Observable<Task[]>; // 
-    = this.store.collection('todo').valueChanges({ idField: 'id' }) as Observable<Task[]>;
-  inProgress//!: Observable<Task[]>; // 
-    = this.store.collection('inProgress').valueChanges({ idField: 'id' }) as Observable<Task[]>;
-  done//!: Observable<Task[]>; // 
-    = this.store.collection('done').valueChanges({ idField: 'id' }) as Observable<Task[]>;
-
-  // private todoCollection!: AngularFirestoreCollection<Task>;
-  // private inProgressCollection!: AngularFirestoreCollection<Task>;
-  // private doneCollection!: AngularFirestoreCollection<Task>;
+  todo = this.store.collection('todo').valueChanges({ idField: 'id' }) as Observable<Task[]>;
+  inProgress = this.store.collection('inProgress').valueChanges({ idField: 'id' }) as Observable<Task[]>;
+  done = this.store.collection('done').valueChanges({ idField: 'id' }) as Observable<Task[]>;
 
   constructor(
     private dialog: MatDialog,
@@ -35,14 +28,6 @@ export class AppComponent {
   ) { }
 
   ngOnInit(): void {
-    // this.todoCollection = this.store.collection<Task>('todo');
-    // this.todo = this.todoCollection.valueChanges();
-
-    // this.inProgressCollection = this.store.collection<Task>('inProgress');
-    // this.inProgress = this.inProgressCollection.valueChanges();
-
-    // this.doneCollection = this.store.collection<Task>('done');
-    // this.done = this.doneCollection.valueChanges();
   }
 
   editTask(list: 'done' | 'todo' | 'inProgress', task: Task): void {

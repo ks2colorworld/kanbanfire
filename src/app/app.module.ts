@@ -13,10 +13,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 
-// import { initializeApp, provideFirebaseApp } from '@angular/fire/app'; 
-// import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { AngularFireModule } from '@angular/fire/compat'; // 튜토리얼 기준 >> import { AngularFireModule } from '@angular/fire';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore/'; // 튜토리얼 기준 >> import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore/';
 
 import { environment } from '../environments/environment';
 import { TaskComponent } from './task/task.component';
@@ -39,8 +37,6 @@ import { TaskDialogComponent } from './task-dialog/task-dialog.component';
     MatDialogModule,
     MatInputModule,
     FormsModule,
-    // provideFirebaseApp(() => initializeApp(environment.firebase)),
-    // provideFirestore(() => getFirestore()),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
   ],
