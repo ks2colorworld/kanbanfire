@@ -33,12 +33,26 @@ export class AppComponent {
   inProgress: Task[] = [];
   done: Task[] = [];
 
-  editTask(list: string, task: Task): void {
-    /*
-    주의: 동일한 구획에서 작업을 재정렬하는 경우 이를 처리하지 않습니다.
-    편의상 Codelab에서는 이 기능을 생략하지만 CDK 문서를 사용하여 직접 구현해도 됩니다.
-    문서 : https://material.angular.io/cdk/drag-drop/overview
-     */
+  editTask(list: 'done' | 'todo' | 'inProgress', task: Task): void {
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
+      width: '270px',
+      data: {
+        task,
+        enableDelete: true,
+      },
+    });
+    dialogRef.afterClosed().subscribe((result: TaskDialogResult | undefined) => {
+      if (!result) {
+        return;
+      }
+      const dataList = this[list];
+      const taskIndex = dataList.indexOf(task);
+      if (result.delete) {
+        dataList.splice(taskIndex, 1);
+      } else {
+        dataList[taskIndex] = task;
+      }
+    });
   }
 
   drop(event: CdkDragDrop<Task[]>): void {   // 튜토리얼 소스 (오류!) >> CdkDragDrop<Task[]|null> / https://developers.google.com/codelabs/building-a-web-app-with-angular-and-firebase#4
