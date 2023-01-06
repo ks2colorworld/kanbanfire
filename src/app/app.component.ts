@@ -1,3 +1,4 @@
+import { Task } from './task/Task';
 import { Component } from '@angular/core';
 
 @Component({
@@ -7,4 +8,15 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'kanban-fire';
+
+  todo: Task[] = [
+    {
+      title: 'Buy milk',
+      description: 'Go to the store and by milk'
+    },
+    {
+      title: 'Create a Kanban app',
+      description: 'Using Firebase and Angular create a Kanban app!'
+    }
+  ];
 }
