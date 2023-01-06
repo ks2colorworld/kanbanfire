@@ -1,6 +1,10 @@
-import { Task } from './task/Task';
 import { Component } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
+import { MatDialog } from '@angular/material/dialog';
+
+import { Task } from './task/Task';
+import { TaskDialogResult } from './task-dialog/TaskDialogResult';
+import { TaskDialogComponent } from './task-dialog/task-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +12,11 @@ import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+
+  constructor(
+    private dialog: MatDialog
+  ) { }
+
   title = 'kanban-fire';
 
   todo: Task[] = [
@@ -46,5 +55,22 @@ export class AppComponent {
       event.previousIndex,
       event.currentIndex
     );
+  }
+
+  newTask(): void {
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
+      width: '270px',
+      data: {
+        task: {},
+      },
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe((result: TaskDialogResult | undefined) => {
+        if (!result) {
+          return;
+        }
+        this.todo.push(result.task);
+      });
   }
 }
