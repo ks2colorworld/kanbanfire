@@ -2,12 +2,21 @@ import { Component } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 
-import { AngularFirestore } from "@angular/fire/compat/firestore";
+import { AngularFirestore, AngularFirestoreCollection } from "@angular/fire/compat/firestore";
 
 import { Task } from './task/Task';
 import { TaskDialogResult } from './task-dialog/TaskDialogResult';
 import { TaskDialogComponent } from './task-dialog/task-dialog.component';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+// 낙관적 업데이트 (optimistic updates) 개선 : https://developers.google.com/codelabs/building-a-web-app-with-angular-and-firebase?hl=ko#11
+const getObservable = (collection: AngularFirestoreCollection<Task>) => {
+  const subject = new BehaviorSubject<Task[]>([]);
+  collection.valueChanges({ idField: 'id' }).subscribe((val: Task[]) => {
+    subject.next(val);
+  });
+  return subject;
+};
 
 @Component({
   selector: 'app-root',
@@ -18,9 +27,9 @@ export class AppComponent {
 
   title = 'kanban-fire';
 
-  todo = this.store.collection('todo').valueChanges({ idField: 'id' }) as Observable<Task[]>;
-  inProgress = this.store.collection('inProgress').valueChanges({ idField: 'id' }) as Observable<Task[]>;
-  done = this.store.collection('done').valueChanges({ idField: 'id' }) as Observable<Task[]>;
+  todo = getObservable(this.store.collection('todo')) as Observable<Task[]>;
+  inProgress = getObservable(this.store.collection('inProgress')) as Observable<Task[]>;
+  done = getObservable(this.store.collection('done')) as Observable<Task[]>;
 
   constructor(
     private dialog: MatDialog,
