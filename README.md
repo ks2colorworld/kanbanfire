@@ -1,6 +1,6 @@
-# KanbanFire
+# KanbanFire ("@angular/fire": "^7.5.0")
 
-튜토리얼 : <https://developers.google.com/codelabs/building-a-web-app-with-angular-and-firebase#0>
+튜토리얼 ("@angular/fire": "^6.0.2") : <https://developers.google.com/codelabs/building-a-web-app-with-angular-and-firebase#0>
 
 firebase web-app : <https://kanbanfire-9818c.web.app/>  
 
